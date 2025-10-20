@@ -1,0 +1,26 @@
+RESUM D'ALERTES ATM - 2025-10-06 12:44:05
+==================================================
+
+Total alertes: 253
+Alertes úniques: 253
+Alertes actives: 236
+
+Tipus d'efectes:
+  SIGNIFICANT_DELAYS: 161
+  DETOUR: 51
+  OTHER_EFFECT: 29
+  MODIFIED_SERVICE: 5
+  NO_SERVICE: 4
+  UNKNOWN_EFFECT: 3
+
+Rutes més afectades:
+  TBX_1: 116
+  TBX_3: 50
+  AMB_211: 6
+  AMB_218: 5
+  AMB_220: 5
+  AMB_210: 5
+  AMB_417: 4
+  AMB_232: 4
+  AMB_403: 4
+  AMB_217: 4

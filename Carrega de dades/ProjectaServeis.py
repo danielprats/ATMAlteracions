@@ -32,23 +32,6 @@ def crea_conn_postgis(
     conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
     return conn
 
-def eliminaIndex():
-    """
-    Elimina l'índex de la taula atm.sto.
-    """
-    conn = crea_conn_postgis()
-    cur = conn.cursor()
-    try:
-        cur.execute("DROP INDEX IF EXISTS atm.sto_geom_idx;")
-        print("Índex eliminat amb èxit.")
-    except Exception as e:
-        print(f"Error eliminant l'índex: {e}")
-    finally:
-        cur.close()
-        conn.close()
-
-
-
 def processar_dades(
         data_inici: str,
         periode: int,
@@ -81,12 +64,12 @@ def processar_dades(
     cur_tmp = conn.cursor()
     try:
         start_time = time.perf_counter()
-        cur_tmp.execute("SELECT atm.actualitza_serveis_tmp();")
-        result = cur_tmp.fetchone()
+        #cur_tmp.execute("SELECT atm.actualitza_serveis_tmp();")
+        #result = cur_tmp.fetchone()
         elapsed_time = time.perf_counter() - start_time
         
         print(f"Taula serveis_tmp actualitzada correctament")
-        print(f"Resultat: {result[0] if result else 'Completat'}")
+        #print(f"Resultat: {result[0] if result else 'Completat'}")
         print(f"Temps d'actualització: {timedelta(seconds=elapsed_time)}")
     except psycopg2.Error as e:
         print(f"Error actualitzant serveis_tmp: {e}")
@@ -101,13 +84,14 @@ def processar_dades(
     sql="SELECT DISTINCT t.route_id as route_id\
         FROM atm.cal c\
             LEFT JOIN atm.tri t ON c.service_id = t.service_id\
-            LEFT JOIN atm.sto_t st ON t.trip_id = st.trip_id\
-            LEFT JOIN atm.sto s ON st.stop_id = s.stop_id\
-            WHERE ST_Within(s.geom,ST_MakeEnvelope(424200, 4600000, 438900, 4605000, 25831))\
-            AND to_date(c.start_date::text, 'YYYYMMDD') <= to_date(%s, 'YYYY/MM/DD')\
-            AND to_date(c.end_date::text, 'YYYYMMDD')   >= to_date(%s, 'YYYY/MM/DD') --and route_id='CRA_360'\
+            --LEFT JOIN atm.sto_t st ON t.trip_id = st.trip_id\
+            --LEFT JOIN atm.sto s ON st.stop_id = s.stop_id\
+            WHERE to_date(c.start_date::text, 'YYYYMMDD') <= to_date(%s, 'YYYY/MM/DD')\
+            AND to_date(c.end_date::text, 'YYYYMMDD')   >= to_date(%s, 'YYYY/MM/DD')\
         order by route_id;"
-      
+    # ST_Within(s.geom,ST_MakeEnvelope(424200, 4600000, 438900, 4605000, 25831)) AND 
+    # # and s.stop_id in ('COS_19100','COS_19150','COS_16131') \  
+
     cur1.execute(sql, (data_inici, data_fi,));
 
     try:
@@ -120,8 +104,9 @@ def processar_dades(
         for row in cur1:
             i+=1
 
+            sql=f"select atm.projecta_serveis_route('{row[0]}', to_date('{data_inici}', 'YYYY/MM/DD'), to_date('{data_fi}', 'YYYY/MM/DD'))"
             cur2.execute(
-                "select projecta_serveis_route(%s, to_date(%s, 'YYYY/MM/DD'), to_date(%s, 'YYYY/MM/DD'));",
+                "select atm.projecta_serveis_route(%s, to_date(%s, 'YYYY/MM/DD'), to_date(%s, 'YYYY/MM/DD'));",
                 (row[0], data_inici, data_fi,)  # tuple amb un sol element
             )
             row_in = cur2.fetchone()
@@ -139,6 +124,7 @@ def processar_dades(
         elapsed = time.perf_counter() - start
         print(f"Temps total de procés: {timedelta(seconds=elapsed)}")
 
+
     except psycopg2.Error as e:
         print(f"Error de base de dades: {e}")
         conn.rollback()
@@ -149,9 +135,9 @@ def processar_dades(
         raise
     finally:
         cur1.close()
-        cur2.close()
-        conn.close() 
+
 
 if __name__ == "__main__":
     # Exemple: processar 12 períodes de 5 minuts a partir del 04/05/2025
-    res = processar_dades(data_inici="2025/02/10", periode=24*7)
+    res = processar_dades(data_inici="2025/10/20", periode=24*10)
+

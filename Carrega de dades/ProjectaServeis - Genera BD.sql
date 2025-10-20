@@ -1,3 +1,4 @@
+Aquest fitxer conté els SQL per poder generar l''estructura de la BD que soporta les projeccions de serveis
 -------------------------------------------------------------
 -- CÀLCUL DE PROJECCIÓ DE SERVEIS
 --

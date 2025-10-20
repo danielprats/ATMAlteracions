@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta d'Incidències - ATM</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="atm-logo">
+                    <img src="https://via.placeholder.com/200x80/003d6b/ffffff?text=ATM" alt="ATM - Autoritat del Transport Metropolità" class="logo-img">
+                </div>
+                <h1 class="main-title">Consulta d'Incidències del Transport</h1>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Controls i filtres -->
+            <section class="controls-section">
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="status-filter" class="filter-label">Estat:</label>
+                        <select id="status-filter" class="filter-select">
+                            <option value="">Tots els estats</option>
+                            <option value="ACTIVE">Actiu</option>
+                            <option value="ACTIVE_OLD">Actiu (Antic)</option>
+                            <option value="INACTIVE">Inactiu</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="search-input" class="filter-label">Cercar:</label>
+                        <input type="text" id="search-input" class="filter-input" placeholder="Cercar per descripció...">
+                    </div>
+                    <div class="filter-group">
+                        <button id="refresh-btn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i>
+                            Actualitzar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total d'alertes:</span>
+                        <span id="total-alerts" class="stat-value">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Alertes actives:</span>
+                        <span id="active-alerts" class="stat-value">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Llista d'alertes -->
+            <section class="alerts-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Incidències del Transport
+                    </h2>
+                </div>
+                
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <p>Carregant incidències...</p>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <p>Error en carregar les dades. Si us plau, revisa que els fitxers CSV estiguin disponibles.</p>
+                </div>
+
+                <div id="alerts-container" class="alerts-container" style="display: none;">
+                    <!-- Les alertes es generaran dinàmicament aquí -->
+                </div>
+
+                <div id="no-results" class="no-results" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <p>No s'han trobat incidències amb els filtres aplicats.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal per mostrar el detall de l'alerta -->
+    <div id="alert-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title" class="modal-title"></h3>
+                <button id="close-modal" class="close-btn">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="modal-content" class="modal-detail">
+                    <!-- El contingut del modal es generarà dinàmicament -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Autoritat del Transport Metropolità (ATM) - Consulta d'Incidències</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="data.js"></script>
+    <script src="components.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

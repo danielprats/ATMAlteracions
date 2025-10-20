@@ -46,3 +46,26 @@ CREATE INDEX sto_serv_disp_num_serv_sortida_idx ON atm.sto_serv_disp USING btree
 CREATE INDEX sto_serv_disp_stop_id_idx ON atm.sto_serv_disp USING btree (stop_id);
 CREATE INDEX sto_serv_disp_temps_finestra_int_idx ON atm.sto_serv_disp USING btree (temps_finestra_int);
 CREATE INDEX sto_serv_disp_temps_int_idx ON atm.sto_serv_disp USING btree (temps_int);
+
+
+
+
+-- SQL DE TEST
+select subq.lst_arribada, subq.lst_sortida, subq.stop_id
+FROM (
+    SELECT sp_main.id as id, sp_main.stop_id,
+           array_agg(spp_arr.id) FILTER (WHERE spp_arr.id IS NOT NULL) as lst_arribada,
+           array_agg(spp_sort.id) FILTER (WHERE spp_sort.id IS NOT NULL) as lst_sortida
+    FROM serveis_projectats sp_main
+	    INNER JOIN sto_properes pp ON pp.stop_id = sp_main.stop_id
+		    LEFT JOIN serveis_projectats spp_arr ON pp.stop_id_propera = spp_arr.stop_id 
+		        AND spp_arr.temps_int > sp_main.temps_int - (60*20) 
+		        AND spp_arr.temps_int <= sp_main.temps_int
+			    LEFT JOIN serveis_projectats spp_sort ON pp.stop_id_propera = spp_sort.stop_id 
+			        AND spp_sort.temps_int >= sp_main.temps_int 
+			        AND spp_sort.temps_int < sp_main.temps_int + (60*20)
+    WHERE sp_main.temps_int > 1759744800 - (60*60) 
+      AND sp_main.temps_int <= 1759744800 +(60*60)
+    GROUP BY sp_main.id, sp_main.stop_id
+) subq
+WHERE subq.id=11786920;
